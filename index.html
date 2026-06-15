@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>VERSUS — bet your friends</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0B11; --bg2:#0C0E16; --surface:#141820; --surface2:#1C2230; --surface3:#222A3A;
+    --line:#2A3144; --ink:#F4F7FC; --mut:#8C94A8; --dim:#5C6478;
+    --mint:#22E08A; --mint-glow:#22E08A; --coral:#FF5C72; --violet:#8B7CFF; --amber:#FFC24B; --gold:#FFD700;
+    --display:'Bricolage Grotesque', system-ui, sans-serif;
+    --sans:'Inter', system-ui, -apple-system, sans-serif;
+    --mono:'JetBrains Mono', ui-monospace, monospace;
+    --r:20px; --r2:14px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%; overscroll-behavior:none;}
+  body{
+    font-family:var(--sans); color:var(--ink);
+    background:#05060B;
+    display:flex; justify-content:center; align-items:flex-start;
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  .app{
+    width:100%; max-width:420px; min-height:100dvh; position:relative; overflow:hidden;
+    background:
+      radial-gradient(720px 380px at 50% -10%, rgba(34,224,138,.10), transparent 65%),
+      radial-gradient(640px 380px at 100% 108%, rgba(139,124,255,.09), transparent 58%),
+      linear-gradient(180deg, var(--bg2), var(--bg));
+    border-left:1px solid var(--line); border-right:1px solid var(--line);
+    box-shadow:0 0 0 1px rgba(0,0,0,.6);
+  }
+
+  /* Better responsiveness for small screens */
+  @media (max-width: 360px) {
+    .app {
+      max-width: 100%;
+      border-left: none;
+      border-right: none;
+    }
+    .sec {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+  }
+
+  button{font-family:inherit; user-select:none;}
+
+  /* ========== INTRO ========== */
+  #intro{
+    position:absolute; inset:0; z-index:60; display:flex; flex-direction:column;
+    justify-content:space-between; padding:52px 26px 34px;
+    background:linear-gradient(180deg,#0A0C14,#06070C);
+    transition:opacity .45s cubic-bezier(.2,.8,.2,1), transform .45s cubic-bezier(.2,.8,.2,1);
+  }
+  #intro.gone{opacity:0; transform:scale(1.035); pointer-events:none;}
+  .vsmark{
+    margin:12px auto 0; width:132px; height:132px; border-radius:32px; position:relative;
+    display:grid; place-items:center;
+    background:linear-gradient(145deg,#12151F,#0B0D15);
+    border:1px solid var(--line);
+    box-shadow:0 0 80px rgba(34,224,138,.22), inset 0 0 40px rgba(0,0,0,.6);
+    animation:floaty 4.2s ease-in-out infinite;
+  }
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  .vsmark b{font-family:var(--display); font-weight:800; font-size:56px; letter-spacing:-.045em;
+    background:linear-gradient(125deg,var(--mint),#A3FFCF 38%, var(--coral) 125%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .vsmark .ring{position:absolute; inset:-10px; border-radius:38px; border:1px solid rgba(34,224,138,.22); animation:pulse 2.8s ease-out infinite;}
+  @keyframes pulse{0%{transform:scale(.94);opacity:.65}100%{transform:scale(1.14);opacity:0}}
+
+  .pitch{margin-top:auto;}
+  .pitch h1{
+    font-family:var(--display); font-weight:800; font-size:44px; line-height:.96;
+    letter-spacing:-.032em; margin:0 0 18px;
+  }
+  .pitch h1 .l{display:block; opacity:0; transform:translateY(16px); animation:rise .55s forwards;}
+  .pitch h1 .l:nth-child(1){animation-delay:.12s;}
+  .pitch h1 .l:nth-child(2){animation-delay:.26s; color:var(--mint);}
+  .pitch h1 .l:nth-child(3){animation-delay:.40s;}
+  @keyframes rise{to{opacity:1; transform:translateY(0);}}
+  .pitch p{color:var(--mut); font-size:15.5px; line-height:1.52; margin:0 0 26px; max-width:335px;
+    opacity:0; animation:rise .55s .55s forwards;}
+  .pitch p b{color:var(--ink);}
+  .beats{display:flex; gap:9px; margin-bottom:26px; opacity:0; animation:rise .55s .68s forwards;}
+  .beat{flex:1; background:rgba(255,255,255,.025); border:1px solid var(--line); border-radius:14px; padding:11px 10px;}
+  .beat .ic{font-size:17px;} .beat .t{font-size:10.8px; color:var(--mut); margin-top:6px; line-height:1.32;}
+  .enter{
+    width:100%; padding:19px; border:none; border-radius:16px; cursor:pointer;
+    font-family:var(--display); font-weight:700; font-size:18.5px; color:#04140C;
+    background:linear-gradient(180deg,#24E58F,#14B86F);
+    box-shadow:0 12px 34px rgba(34,224,138,.38); opacity:0; animation:rise .55s .82s forwards;
+  }
+  .enter:active{transform:translateY(1.5px) scale(.985);}
+  .introfoot{text-align:center; margin-top:16px; font-size:10.2px; color:var(--dim); opacity:0; animation:rise .55s .95s forwards;}
+
+  /* ========== HEADER ========== */
+  .hdr{display:flex; align-items:center; justify-content:space-between; padding: max(13px, env(safe-area-inset-top)) 16px 7px; position:relative; z-index:10;}
+  .logo{display:flex; align-items:center; gap:10px;}
+  .logo .m{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;
+    background:linear-gradient(145deg,#12151F,#0B0D15); border:1px solid var(--line);}
+  .logo .m b{font-family:var(--display);font-weight:800;font-size:16px;
+    background:linear-gradient(120deg,var(--mint),var(--coral));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .logo .n{font-family:var(--display); font-weight:800; font-size:18px; letter-spacing:.015em;}
+  .bal{text-align:right; cursor:pointer;}
+  .bal .v{font-family:var(--mono); font-weight:800; font-size:17px; color:var(--mint); transition:color .2s;}
+  .bal .k{font-size:9.2px; color:var(--mut); letter-spacing:.11em; text-transform:uppercase;}
+  .demo{margin:1px 16px 0; font-size:10px; color:#FFB3BD; background:rgba(255,92,114,.07);
+    border:1px solid rgba(255,92,114,.18); border-radius:9px; padding:5px 11px; display:flex; gap:7px; align-items:center;}
+  .demo i{width:5.5px;height:5.5px;border-radius:50%;background:var(--coral);box-shadow:0 0 9px var(--coral);}
+
+  /* ========== BOTTOM TABS ========== */
+  .tabs{
+    position:absolute; bottom:0; left:0; right:0; z-index:30;
+    display:flex; background:rgba(10,11,17,.96); border-top:1px solid var(--line);
+    padding:6px 6px max(10px, env(safe-area-inset-bottom)); backdrop-filter:blur(20px);
+  }
+  .tab{flex:1; display:flex; flex-direction:column; align-items:center; gap:1px; padding:7px 4px 4px;
+    color:var(--mut); font-size:9.5px; font-weight:600; letter-spacing:.02em; cursor:pointer; transition:all .15s ease;}
+  .tab.active{color:var(--mint);}
+  .tab .ic{font-size:19px; margin-bottom:1px; transition:transform .15s;}
+  .tab.active .ic{transform:scale(1.05);}
+  .tab span{opacity:.85;}
+
+  /* ========== SECTIONS ========== */
+  .sec{margin:16px 16px 0;}
+  .sechd{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;}
+  .sechd b{font-family:var(--display); font-weight:700; font-size:14px; letter-spacing:.015em;}
+  .sechd .live{display:flex; align-items:center; gap:6px; font-size:10px; color:var(--mut);}
+  .sechd .live i{width:5.5px;height:5.5px;border-radius:50%;background:var(--mint);box-shadow:0 0 9px var(--mint);animation:blink 1.5s infinite;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+
+  /* live feed */
+  .feed{background:var(--surface); border:1px solid var(--line); border-radius:16px; overflow:hidden;}
+  .fi{display:flex; align-items:center; gap:10px; padding:9px 13px; border-bottom:1px solid rgba(42,49,68,.6); font-size:12.2px; cursor:pointer;}
+  .fi:last-child{border-bottom:none;}
+  .fi:active{background:rgba(255,255,255,.015);}
+  .fi .av{width:26px;height:26px;border-radius:8px;flex:none;display:grid;place-items:center;font-family:var(--mono);font-weight:800;font-size:11px;color:#05100F;}
+  .fi .tx{flex:1; min-width:0; color:var(--mut); line-height:1.35;}
+  .fi .tx b{color:var(--ink); font-weight:600;}
+  .fi .tx .win{color:var(--mint); font-weight:700; font-family:var(--mono);}
+  .fi .tg{font-size:9px; color:var(--dim); font-family:var(--mono);}
+
+  /* open duels */
+  .duels{display:flex; flex-direction:column; gap:8px;}
+  .duelc{display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--line); border-radius:15px; padding:11px 13px; cursor:pointer; transition:transform .1s, box-shadow .1s;}
+  .duelc:active{transform:scale(.985);}
+  .duelc.hot{border-color:rgba(255,194,75,.35); box-shadow:0 0 0 1px rgba(255,194,75,.15);}
+  .duelc .av{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-family:var(--mono);font-weight:800;font-size:16px;color:#05100F;flex:none;}
+  .duelc .meta{flex:1;min-width:0;}
+  .duelc .nm{font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px;}
+  .duelc .gm{font-size:10.8px;color:var(--mut);margin-top:3px;}
+  .gpill{font-size:9px;padding:2px 7px;border-radius:6px;letter-spacing:.04em;text-transform:uppercase;font-weight:700;}
+  .gpill.crash{background:rgba(34,224,138,.12);color:var(--mint);}
+  .gpill.tick{background:rgba(139,124,255,.13);color:var(--violet);}
+  .duelc .right{text-align:right;}
+  .duelc .stake{font-family:var(--mono);font-weight:800;font-size:15px;}
+  .joinb{margin-top:5px;border:none;border-radius:9px;padding:6px 14px;font-family:var(--sans);font-weight:700;font-size:11.8px;
+    background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--ink);cursor:pointer; transition:all .1s;}
+  .joinb:active{transform:scale(.96); background:rgba(255,255,255,.09);}
+
+  /* rooms */
+  .rooms{display:flex; gap:11px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none;}
+  .rooms::-webkit-scrollbar{display:none;}
+  .room{flex:none; width:178px; background:linear-gradient(155deg,#1A1526,#12121A);
+    border:1px solid #2F2844; border-radius:17px; padding:14px; cursor:pointer; position:relative; overflow:hidden; transition:transform .1s;}
+  .room:active{transform:scale(.97);}
+  .room .liveppl{position:absolute;top:12px;right:12px;font-size:9.2px;font-family:var(--mono);color:var(--mint);background:rgba(34,224,138,.09);padding:2px 7px;border-radius:6px;}
+  .room .host{display:flex;align-items:center;gap:9px;}
+  .room .ha{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-family:var(--mono);font-weight:800;font-size:14px;color:#120A20;background:linear-gradient(145deg,var(--violet),#C8B8FF);}
+  .room .hn{font-weight:700;font-size:13.5px;}
+  .room .hs{font-size:9.8px;color:var(--violet);}
+  .room .pool{margin-top:13px;}
+  .room .pl{font-size:10.2px;color:var(--mut);display:flex;justify-content:space-between;margin-bottom:5px;}
+  .room .bar{height:6px;border-radius:5px;background:#241D34;overflow:hidden;}
+  .room .bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--violet),#B9A6FF);}
+
+  .foot{padding:22px 18px 28px;text-align:center;}
+  .foot .rs{background:none;border:none;color:var(--mut);font-size:10.8px;text-decoration:underline;cursor:pointer;}
+  .foot p{font-size:9.8px;color:#4E5872;line-height:1.48;margin:11px 0 0;}
+
+  /* ========== CHALLENGE SHEET ========== */
+  .scrim{position:absolute; inset:0; z-index:40; background:rgba(4,5,9,.65); backdrop-filter:blur(4px);
+    opacity:0; pointer-events:none; transition:opacity .22s;}
+  .scrim.on{opacity:1; pointer-events:auto;}
+  .sheet{position:absolute; left:0; right:0; bottom:0; z-index:41; background:#11151F;
+    border-top:1px solid var(--line); border-radius:26px 26px 0 0; padding:7px 18px max(28px, env(safe-area-inset-bottom));
+    transform:translateY(104%); transition:transform .32s cubic-bezier(.21,.82,.2,1);}
+  .sheet.on{transform:translateY(0);}
+  .grab{width:40px;height:4.5px;border-radius:4px;background:#343C50;margin:7px auto 15px;}
+  .sheet h3{font-family:var(--display);font-weight:700;font-size:20px;margin:0 0 2px;}
+  .sheet .sub{font-size:12.5px;color:var(--mut);margin:0 0 18px;}
+  .lab{font-size:10.2px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:15px 0 8px; font-weight:600;}
+  .games{display:flex;gap:10px;}
+  .gcard{flex:1;background:var(--surface);border:1.5px solid var(--line);border-radius:15px;padding:13px 12px;cursor:pointer;transition:all .12s;}
+  .gcard.sel{border-color:var(--mint);background:rgba(34,224,138,.06); box-shadow:0 0 0 1px rgba(34,224,138,.15);}
+  .gcard .gi{font-size:22px;}
+  .gcard .gt{font-weight:700;font-size:14px;margin-top:8px;}
+  .gcard .gd{font-size:10.8px;color:var(--mut);margin-top:3px;line-height:1.35;}
+  .stakes{display:flex;gap:8px; flex-wrap:wrap;}
+  .stake-c{flex:1 1 22%; min-width:68px; text-align:center; padding:10px 0; border-radius:12px; cursor:pointer; font-family:var(--mono);font-weight:800;font-size:14.5px;
+    background:var(--surface);border:1.5px solid var(--line);color:var(--mut);transition:all .12s;}
+  .stake-c.sel{border-color:var(--mint);color:var(--mint);background:rgba(34,224,138,.07);}
+  .sheetbtns{display:flex;gap:10px;margin-top:22px;}
+  .sb{flex:1;padding:15px;border-radius:14px;border:none;cursor:pointer;font-family:var(--display);font-weight:700;font-size:15px;}
+  .sb.ghost{background:var(--surface2);border:1px solid var(--line);color:var(--ink);}
+  .sb.go{background:linear-gradient(180deg,#24E58F,#14B86F);color:#04140C;box-shadow:0 9px 26px rgba(34,224,138,.32);}
+  .sb:active{transform:scale(.985);}
+
+  /* ========== GAME VIEW ========== */
+  #game{position:absolute; inset:0; z-index:50; background:linear-gradient(180deg,#0A0C14,#06070B);
+    display:none; flex-direction:column;}
+  #game.on{display:flex;}
+  .gtop{display:flex;align-items:center;justify-content:space-between;padding:13px 16px 5px;}
+  .gback{background:none;border:none;color:var(--mut);font-size:13.5px;cursor:pointer;display:flex;align-items:center;gap:5px; font-weight:500;}
+  .gpot{font-family:var(--mono);font-weight:800;font-size:15px;text-align:right;}
+  .gpot small{display:block;font-size:8.8px;color:var(--mut);font-family:var(--sans);letter-spacing:.11em;text-transform:uppercase;font-weight:500;}
+  .fair-badge{font-size:9px; padding:1px 7px; border-radius:6px; background:rgba(139,124,255,.12); color:var(--violet); cursor:pointer; margin-left:6px; font-weight:700; letter-spacing:.03em;}
+
+  .vsbar{display:flex;align-items:center;gap:11px;padding:5px 16px 9px;}
+  .vsbar .side{flex:1;display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:8px 11px;}
+  .vsbar .side.you{border-color:rgba(34,224,138,.45);}
+  .vsbar .side.opp{border-color:rgba(255,92,114,.4);flex-direction:row-reverse;text-align:right;}
+  .vsbar .side .av{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-family:var(--mono);font-weight:800;font-size:14px;color:#05100F;flex:none;}
+  .vsbar .side .nm{font-size:12.5px;font-weight:600;}
+  .vsbar .side .sc{font-family:var(--mono);font-size:11.5px;color:var(--mut);}
+  .vsbar .you .sc{color:var(--mint);} .vsbar .opp .sc{color:var(--coral);}
+  .vsx{font-family:var(--display);font-weight:800;font-size:15px;color:var(--mut);}
+
+  .stage{margin:0 16px;flex:1;position:relative;background:linear-gradient(180deg,#0A0C15,#07080F);
+    border:1px solid var(--line);border-radius:var(--r);overflow:hidden;min-height:305px;}
+  #cv{position:absolute;inset:0;width:100%;height:100%;}
+  .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none; z-index:2;}
+  .big{font-family:var(--mono);font-weight:800;font-size:66px;line-height:1;letter-spacing:-.025em;transition:color .12s, transform .1s;}
+  .ph{margin-top:7px;font-size:11.2px;letter-spacing:.17em;text-transform:uppercase;color:var(--mut); font-weight:600;}
+
+  .gctrl{padding:14px 16px 24px; position:relative;}
+  .gbtn{width:100%;padding:17px;border:none;border-radius:15px;cursor:pointer;font-family:var(--display);font-weight:700;font-size:17px;transition:transform .08s, box-shadow .1s;}
+  .gbtn:active{transform:translateY(1px) scale(.99);} .gbtn:disabled{opacity:.42; filter:saturate(.6);}
+  .gbtn.play{background:linear-gradient(180deg,#24E58F,#14B86F);color:#04140C;box-shadow:0 9px 26px rgba(34,224,138,.34);}
+  .gbtn.cash{background:linear-gradient(180deg,#FFD35E,#FFB52E);color:#1A1200;box-shadow:0 9px 26px rgba(255,181,71,.32);}
+  .gbtn.pick{display:flex;gap:10px;}
+  .pickb{flex:1;padding:17px;border:none;border-radius:15px;cursor:pointer;font-family:var(--display);font-weight:700;font-size:16.5px; transition:all .1s;}
+  .pickb.up{background:linear-gradient(180deg,#24E58F,#14B86F);color:#04140C;}
+  .pickb.dn{background:linear-gradient(180deg,#FF7186,#F0455F);color:#1A0408;}
+
+  /* result */
+  .result{position:absolute;inset:0;z-index:55;display:none;flex-direction:column;align-items:center;justify-content:center;
+    background:rgba(6,7,12,.88);backdrop-filter:blur(8px);padding:32px 24px;text-align:center;}
+  .result.on{display:flex;animation:rin .28s ease;}
+  @keyframes rin{from{opacity:0;transform:scale(.96);}to{opacity:1;transform:scale(1);}}
+  .rverdict{font-family:var(--display);font-weight:800;font-size:42px;letter-spacing:-.025em; margin-bottom:2px;}
+  .rsub{color:var(--mut);font-size:13.5px;margin-top:3px; max-width:260px;}
+  .rlegs{display:flex;gap:26px;margin:20px 0 8px;font-family:var(--mono);}
+  .rlegs .l{display:flex;flex-direction:column;gap:4px; align-items:center;}
+  .rlegs .l small{font-size:9.2px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-family:var(--sans);}
+  .rlegs .l .s{font-size:21px;font-weight:800;}
+  .ramt{font-family:var(--mono);font-weight:800;font-size:23px;margin:6px 0 22px;}
+  .rbtns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:310px;}
+  .rb{padding:15px;border-radius:14px;border:none;cursor:pointer;font-family:var(--display);font-weight:700;font-size:15.5px; transition:transform .08s;}
+  .rb.share{background:linear-gradient(180deg,#8B7CFF,#6D5CF0);color:#fff;box-shadow:0 9px 24px rgba(139,124,255,.32);}
+  .rb.again{background:var(--surface2);border:1px solid var(--line);color:var(--ink);}
+  .rb:active{transform:scale(.985);}
+  .confetti{position:absolute;width:8px;height:8px;border-radius:2px;top:-22px;animation:fall linear forwards;pointer-events:none; z-index:10;}
+  @keyframes fall{to{transform:translateY(125vh) rotate(520deg);opacity:.18;}}
+
+  /* toast */
+  .toast{position:absolute;left:50%;bottom:92px;transform:translateX(-50%) translateY(22px);z-index:65;
+    background:#1C2230;border:1px solid var(--line);border-radius:12px;padding:12px 17px;font-size:12.8px;
+    opacity:0;transition:.28s cubic-bezier(.2,.8,.2,1);max-width:305px;text-align:center; box-shadow:0 4px 20px rgba(0,0,0,.3);}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast b{color:var(--mint);}
+
+  /* verify modal */
+  .vmodal{position:absolute; inset:0; z-index:70; display:none; align-items:center; justify-content:center; background:rgba(4,5,9,.7); padding:20px;}
+  .vmodal.on{display:flex;}
+  .vcard{background:#11151F; border:1px solid var(--line); border-radius:18px; padding:20px; width:100%; max-width:340px;}
+  .vcard h4{font-family:var(--display); font-weight:700; font-size:17px; margin:0 0 12px;}
+  .vrow{display:flex; justify-content:space-between; font-size:12.2px; margin:7px 0; font-family:var(--mono);}
+  .vrow span:first-child{color:var(--mut);}
+  .vrow span:last-child{color:var(--ink); font-weight:700; word-break:break-all;}
+  .vbtns{display:flex; gap:9px; margin-top:16px;}
+  .vbtn{flex:1; padding:11px; border-radius:11px; border:none; font-weight:700; font-size:13px; cursor:pointer;}
+  .vbtn.copy{background:var(--surface2); color:var(--ink); border:1px solid var(--line);}
+  .vbtn.close{background:linear-gradient(180deg,#24E58F,#14B86F); color:#04140C;}
+
+  /* profile sheet */
+  .profile-sheet .stat{display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid var(--line);}
+  .profile-sheet .stat:last-child{border-bottom:none;}
+  .profile-sheet .stat .k{color:var(--mut); font-size:13px;}
+  .profile-sheet .stat .v{font-family:var(--mono); font-weight:700; font-size:15px; color:var(--ink);}
+  .levelbar{height:6px; background:#222A3A; border-radius:999px; margin:8px 0 4px; overflow:hidden;}
+  .levelbar i{display:block; height:100%; background:linear-gradient(90deg,var(--mint),var(--violet)); width:68%; border-radius:999px;}
+
+  @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important; transition-duration:.01ms!important;}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- INTRO -->
+  <div id="intro">
+    <div class="vsmark"><span class="ring"></span><b>VS</b></div>
+    <div class="pitch">
+      <h1>
+        <span class="l">Bet your</span>
+        <span class="l">friends.</span>
+        <span class="l">Not the house.</span>
+      </h1>
+      <p>Instant PvP duels. Real stakes. <b>Winner takes 95%.</b> House takes transparent 5% rake. No house edge on game outcomes — only the rake.</p>
+      <div class="beats">
+        <div class="beat"><div class="ic">⚔️</div><div class="t">Challenge anyone instantly</div></div>
+        <div class="beat"><div class="ic">⚡</div><div class="t">Settle on-chain in seconds</div></div>
+        <div class="beat"><div class="ic">🔥</div><div class="t">Climb leaderboards &amp; brag</div></div>
+      </div>
+      <button class="enter" id="enterBtn">Enter the arena →</button>
+      <div class="introfoot">Demo • 12,847 duels today • Virtual credits</div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="logo"><div class="m"><b>VS</b></div><div class="n">VERSUS</div></div>
+    <div class="bal" id="balWrap"><div class="v" id="bal">1,000.00 $</div><div class="k">demo balance</div></div>
+  </div>
+  <div class="demo"><i></i> Demo mode — virtual credits only. All opponents simulated. Real version uses on-chain settlement.</div>
+
+  <!-- HOME / FEED TAB -->
+  <div id="tab-home">
+    <!-- HERO -->
+    <div class="hero sec" style="margin-top:8px; background:linear-gradient(150deg,#171B27,#12141D); border:1px solid var(--line); border-radius:var(--r); padding:18px 18px 17px;">
+      <h2 style="font-family:var(--display); font-weight:700; font-size:23px; line-height:1.04; margin:0 0 6px; letter-spacing:-.02em;">Who's got the <span style="color:var(--mint);">nerve?</span></h2>
+      <p style="color:var(--mut); font-size:12.8px; margin:0 0 15px;">Bet your friends. Not the house.<br>Winner takes 95%. Pure PvP.</p>
+      <button class="cta" id="challengeBtn" style="width:100%; padding:15px; border:none; border-radius:14px; cursor:pointer; color:#04140C; font-family:var(--display); font-weight:700; font-size:16.2px; background:linear-gradient(180deg,#24E58F,#14B86F); box-shadow:0 9px 26px rgba(34,224,138,.34); display:flex; align-items:center; justify-content:center; gap:9px;">
+        Start a duel <span class="vs" style="font-family:var(--mono); background:rgba(0,0,0,.18); padding:1px 8px; border-radius:6px; font-size:13px;">VS</span>
+      </button>
+    </div>
+
+    <!-- LIVE ACTIVITY -->
+    <div class="sec">
+      <div class="sechd">
+        <b>Live Activity</b>
+        <div class="live"><i></i> 2.4k online • real-time</div>
+      </div>
+      <div class="feed" id="feed"></div>
+      <div style="text-align:center; margin-top:6px;">
+        <span style="font-size:10px; color:var(--mut); cursor:pointer;" onclick="switchTab('duel')">Browse all open duels →</span>
+      </div>
+    </div>
+
+    <!-- OPEN CHALLENGES -->
+    <div class="sec">
+      <div class="sechd">
+        <b>Open Challenges</b>
+        <span style="font-size:10px; color:#FFC24B">47 waiting • tap to join</span>
+      </div>
+      <div class="duels" id="duels"></div>
+    </div>
+
+    <!-- CREATOR ROOMS -->
+    <div class="sec">
+      <div class="sechd">
+        <b>Creator Rooms</b>
+        <span style="font-size:10px; color:var(--violet)">Live pools • compete vs audience</span>
+      </div>
+      <div class="rooms" id="rooms"></div>
+    </div>
+
+    <div class="foot">
+      <button class="rs" id="reset">Reset demo data</button>
+      <p>Prototype for concept validation. Real-money version will require full licensing, KYC/AML and responsible gambling tools.</p>
+    </div>
+  </div>
+
+  <!-- DUEL / PLAY TAB (quick access) -->
+  <div id="tab-duel" style="display:none; padding:16px;">
+    <div style="text-align:center; padding:40px 20px 20px;">
+      <div style="font-size:52px; margin-bottom:12px;">🎯</div>
+      <h3 style="font-family:var(--display); margin:0 0 8px;">Quick Duel</h3>
+      <p style="color:var(--mut); font-size:14px;">Jump straight into a random match or create your own.</p>
+      <button class="cta" id="quickDuelBtn" style="margin-top:20px; max-width:260px;">Find rival instantly →</button>
+      <button class="sb ghost" id="openSheetFromDuel" style="margin-top:12px; max-width:260px; width:100%;">Create custom duel</button>
+    </div>
+  </div>
+
+  <!-- ROOMS TAB -->
+  <div id="tab-rooms" style="display:none; padding:16px 16px 80px;">
+    <div class="sechd" style="margin-bottom:14px;"><b>Live Creator Rooms</b><span style="font-size:10px;color:var(--mut)">Join the pool • compete vs crowd</span></div>
+    <div class="rooms" id="roomsBig" style="flex-wrap:wrap; gap:12px;"></div>
+    <div style="margin-top:30px; text-align:center; color:var(--mut); font-size:12px;">Rooms are hosted by verified creators.<br>House still takes only 5%.</div>
+  </div>
+
+  <!-- PROFILE TAB -->
+  <div id="tab-profile" style="display:none; padding:16px 16px 90px;">
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:18px 18px 20px; margin-bottom:16px;">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div id="profileAv" style="width:62px;height:62px;border-radius:16px;display:grid;place-items:center;font-family:var(--mono);font-weight:800;font-size:26px;color:#05100F; background:#26E08A;">Y</div>
+        <div style="flex:1;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div id="profileName" style="font-family:var(--display); font-weight:700; font-size:21px;">you.eth</div>
+            <button id="editNameBtn" style="background:none; border:1px solid var(--line); color:var(--mut); font-size:10px; padding:2px 8px; border-radius:6px; cursor:pointer;">edit</button>
+          </div>
+          <div style="color:var(--mint); font-size:12.5px; font-weight:600;">Level 14 • 2,840 XP</div>
+        </div>
+      </div>
+      <div class="levelbar"><i></i></div>
+      <div style="font-size:10px; color:var(--mut); display:flex; justify-content:space-between;"><span>Next level: 3,200 XP</span><span>68%</span></div>
+    </div>
+
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:4px 16px 8px; margin-bottom:16px;" class="profile-sheet">
+      <div class="stat"><div class="k">Total duels</div><div class="v" id="pTotal">142</div></div>
+      <div class="stat"><div class="k">Win rate</div><div class="v" id="pWinrate">61.3%</div></div>
+      <div class="stat"><div class="k">Current streak</div><div class="v" id="pStreak" style="color:var(--mint);">7 🔥</div></div>
+      <div class="stat"><div class="k">Longest streak</div><div class="v" id="pLongest">19</div></div>
+      <div class="stat"><div class="k">Biggest win</div><div class="v" id="pBiggest">+840 $</div></div>
+      <div class="stat"><div class="k">Net P/L (all time)</div><div class="v" id="pPL" style="color:var(--mint);">+2,140 $</div></div>
+    </div>
+
+    <button class="sb ghost" style="width:100%; margin-bottom:10px;" id="claimBonus">Claim daily bonus (+50 $)</button>
+    <button class="sb ghost" style="width:100%;" id="howItWorks">How VERSUS works →</button>
+
+    <!-- Rules Info -->
+    <div style="margin-top:20px;">
+      <div style="font-weight:700; font-size:14px; margin-bottom:10px; padding-left:4px;">
+        Rules <span style="color:#FF5C72; font-size:12px; font-weight:700;">(Must read)</span>
+      </div>
+      
+      <div id="gameCardApex" style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:8px; cursor:pointer;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="font-size:20px;">🚀</div>
+          <div>
+            <div style="font-weight:700;">APEX (Crash)</div>
+            <div style="font-size:11px; color:var(--mut);">Nerve vs Nerve</div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="gameCardPulse" style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:8px; cursor:pointer;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="font-size:20px;">📈</div>
+          <div>
+            <div style="font-weight:700;">PULSE (Tick)</div>
+            <div style="font-size:11px; color:var(--mut);">Up or Down prediction</div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="gameCardReaction" style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; cursor:pointer;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="font-size:20px;">⚡</div>
+          <div>
+            <div style="font-weight:700;">REACTION</div>
+            <div style="font-size:11px; color:var(--mut);">Fast reaction duel</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Rules Modal -->
+  <div id="gameRulesModal" style="position:absolute; inset:0; background:rgba(5,6,10,.85); z-index:80; display:none; align-items:center; justify-content:center; padding:20px;" onclick="if (event.target.id === 'gameRulesModal') hideGameRules()">
+    <div style="background:#11151F; border:1px solid var(--line); border-radius:18px; padding:24px; width:100%; max-width:340px;" onclick="event.stopImmediatePropagation()">
+      <div id="rulesTitle" style="font-family:var(--display); font-weight:700; font-size:20px; margin-bottom:12px;"></div>
+      <div id="rulesContent" style="font-size:14px; line-height:1.6; color:#C8D0E0;"></div>
+      <button id="rulesCloseBtn" style="margin-top:20px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--line); background:var(--surface2); color:var(--ink); font-weight:700;">Close</button>
+    </div>
+  </div>
+
+  <!-- CHALLENGE SHEET -->
+  <div class="scrim" id="scrim"></div>
+  <div class="sheet" id="sheet">
+    <div class="grab"></div>
+    <h3>New duel</h3>
+    <p class="sub">Two players. One pot. Transparent 5% house fee. Winner takes 95%.</p>
+    
+    <div class="lab">Choose game</div>
+    <div class="games" id="games">
+      <div class="gcard sel" data-game="crash">
+        <div class="gi">🚀</div>
+        <div class="gt">APEX <span style="font-size:9px; color:var(--mint); font-weight:400;">(Crash)</span></div>
+        <div class="gd">Cash out higher than your rival before the crash. Pure nerve vs nerve.</div>
+      </div>
+      <div class="gcard" data-game="tick">
+        <div class="gi">📈</div>
+        <div class="gt">PULSE <span style="font-size:9px; color:var(--violet); font-weight:400;">(Tick)</span></div>
+        <div class="gd">Call the next 7 seconds. Up or down. You take opposite sides of the move.</div>
+      </div>
+      <div class="gcard" data-game="reaction">
+        <div class="gi">⚡</div>
+        <div class="gt">REACTION <span style="font-size:9px; color:#FFC24B; font-weight:400;">(Duel)</span></div>
+        <div class="gd">React faster than your rival when the green signal appears.</div>
+      </div>
+    </div>
+
+    <div class="lab">Your stake (winner gets 95% of pot)</div>
+    <div class="stakes" id="stakes">
+      <div class="stake-c" data-s="10">10 $</div>
+      <div class="stake-c sel" data-s="50">50 $</div>
+      <div class="stake-c" data-s="100">100 $</div>
+      <div class="stake-c" data-s="250">250 $</div>
+      <div class="stake-c" data-s="500">500 $</div>
+    </div>
+
+    <div class="sheetbtns">
+      <button class="sb ghost" id="inviteBtn">Challenge friend</button>
+      <button class="sb go" id="findBtn">Find rival instantly →</button>
+    </div>
+  </div>
+
+  <!-- GAME VIEW -->
+  <div id="game">
+    <div class="gtop">
+      <button class="gback" id="gback">← Leave duel</button>
+      <div class="gpot">
+        <span id="potv">100 $</span>
+        <small>pot • 5% rake <span class="fair-badge" id="verifyBtn">verify</span></small>
+      </div>
+    </div>
+
+    <div class="vsbar">
+      <div class="side you"><div class="av" id="youav" style="background:#22E08A">Y</div><div><div class="nm">You</div><div class="sc" id="yousc">—</div></div></div>
+      <div class="vsx">VS</div>
+      <div class="side opp"><div class="av" id="oppav" style="background:#FF5C72">O</div><div><div class="nm" id="oppnm">Rival</div><div class="sc" id="oppsc">—</div></div></div>
+    </div>
+
+    <div class="stage">
+      <canvas id="cv"></canvas>
+      <div class="center">
+        <div class="big" id="big">1.00×</div>
+        <div class="ph" id="ph">get ready</div>
+      </div>
+    </div>
+
+    <div class="gctrl" id="gctrl">
+      <!-- dynamic content injected by JS -->
+    </div>
+
+    <!-- RESULT OVERLAY -->
+    <div class="result" id="result">
+      <div style="margin-bottom:12px;">
+        <div class="rverdict" id="verdict">You win</div>
+        <div class="rsub" id="rsub"></div>
+      </div>
+
+      <div class="rlegs" style="margin: 16px 0 12px;">
+        <div class="l">
+          <small>you</small>
+          <span class="s" id="legyou" style="color:var(--mint)">—</span>
+        </div>
+        <div class="l">
+          <small id="opplabel">rival</small>
+          <span class="s" id="legopp" style="color:var(--coral)">—</span>
+        </div>
+      </div>
+
+      <div class="ramt" id="ramt"></div>
+
+      <div class="rbtns">
+        <button class="rb share" id="shareBtn">📣 Share result to chat</button>
+        <button class="rb again" id="againBtn">Run it back (same stake)</button>
+        <button class="rb again" id="backToMainBtn" style="margin-top:4px; background:#2A3144; border:1px solid var(--line);">← Back to main</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERIFY MODAL -->
+  <div class="vmodal" id="vmodal">
+    <div class="vcard">
+      <h4>Provably Fair — Round #28471</h4>
+      <div class="vrow"><span>Server seed (hashed)</span><span id="vHash" style="font-size:10.5px;"></span></div>
+      <div class="vrow"><span>Client seed</span><span id="vClient"></span></div>
+      <div class="vrow"><span>Crash point</span><span id="vCrash" style="color:var(--mint);"></span></div>
+      <div style="font-size:10.2px; color:var(--mut); margin-top:10px; line-height:1.4;">
+        This round was generated using HMAC-SHA256. Anyone can verify the crash point was not manipulated.
+      </div>
+      <div class="vbtns">
+        <button class="vbtn copy" id="copySeed">Copy seeds</button>
+        <button class="vbtn close" id="closeVerify">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- BOTTOM TABS -->
+  <div class="tabs">
+    <div class="tab active" data-tab="home"><div class="ic">🏠</div><span>Home</span></div>
+    <div class="tab" data-tab="duel"><div class="ic">⚔️</div><span>Duel</span></div>
+    <div class="tab" data-tab="rooms"><div class="ic">👥</div><span>Rooms</span></div>
+    <div class="tab" data-tab="profile"><div class="ic">👤</div><span>Me</span></div>
+  </div>
+
+</div>
+
+<script>
+"use strict";
+(function(){
+  const $=id=>document.getElementById(id);
+  const RAKE=0.05, START_BAL=1000;
+  const NAMES=["kira_x","0xMaru","degen_sam","nadia.ton","void_runner","mira_cis","big_jet99","coldwallet","lucky_lena","tap_tap","oracle7","steady_eddy","jetfuel","sonya.eth","crypt0r","luna_v"];
+  const ROOMS=[
+    {host:"Mellstroy", tag:"LIVE on stream", cap:280},
+    {host:"Evelone", tag:"tournament", cap:140},
+    {host:"TON Degens", tag:"open pool", cap:95},
+    {host:"CryptoKing", tag:"VIP only", cap:55},
+  ];
+  let S = { balance:START_BAL, wins:0, losses:0, streak:0, longestStreak:0, totalDuels:0, biggestWin:0, totalPL:0 };
+
+  // Persistence with localStorage fallback
+  function save(){ try{ localStorage.setItem("versus_v2", JSON.stringify(S)); }catch(e){} }
+  function load(){ try{ const r=localStorage.getItem("versus_v2"); if(r) S=Object.assign(S,JSON.parse(r)); }catch(e){} }
+
+  const fmt=n=>n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+  function avc(seed){let h=0;for(const c of seed)h=(h*31+c.charCodeAt(0))%360;return `hsl(${h} 72% 56%)`;}
+  function pick(a){return a[Math.floor(Math.random()*a.length)];}
+  function rint(a,b){return Math.floor(a+Math.random()*(b-a+1));}
+  function lerp(a,b,t){return a+(b-a)*t;}
+
+  // Audio removed for now.
+  // Will add proper high-quality sounds later using real audio files (when moving to multi-file project).
+
+  // Particles for crash (improved)
+  let particles=[];
+  function spawnParticles(x,y,count,color,spread=1.8, type='normal'){
+    for(let i=0;i<count;i++){
+      const isGreen = color==='#22E08A';
+      particles.push({
+        x,y,
+        vx:(Math.random()-0.5)*spread* (type==='burst'?2.1:1.7),
+        vy:(Math.random()-0.5)*spread*1.6 - (isGreen?0.8:0.1),
+        life: type==='burst' ? 32+Math.random()*22 : 24+Math.random()*16,
+        color, 
+        size: type==='burst' ? 2.8+Math.random()*2.8 : 2.1+Math.random()*2.1,
+        type
+      });
+    }
+  }
+  function updateDrawParticles(ctx,w,h){
+    for(let i=particles.length-1;i>=0;i--){
+      const p=particles[i];
+      p.x+=p.vx; p.y+=p.vy; 
+      p.vy += (p.type==='burst' ? 0.028 : 0.038);
+      p.vx *= 0.985;
+      p.life--;
+      if(p.life<=0){ particles.splice(i,1); continue; }
+      ctx.globalAlpha = Math.max(0.08, p.life / (p.type==='burst'?48:36));
+      ctx.fillStyle=p.color;
+      const s = p.size * (p.life / 40);
+      ctx.fillRect(p.x - s/2, p.y - s/2, s, s);
+    }
+    ctx.globalAlpha=1;
+  }
+
+  // Provably fair
+  function hex(b){return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
+  function rnd(n){const a=new Uint8Array(n); crypto.getRandomValues?crypto.getRandomValues(a):a.forEach((_,i)=>a[i]=rint(0,255)); return hex(a);}
+  async function sha(s){if(crypto.subtle){return hex(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)));}return "n/a";}
+  async function hmac(k,m){if(crypto.subtle){const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(k),{name:"HMAC",hash:"SHA-256"},false,["sign"]); return hex(await crypto.subtle.sign("HMAC",key,new TextEncoder().encode(m)));} let h=0; for(const c of(k+m))h=(h*131+c.charCodeAt(0))>>>0; return h.toString(16).padStart(13,"0");}
+  function crashPt(h){const e=Math.pow(2,52); const x=parseInt(h.slice(0,13),16); if(x%900===0)return 1.00; let c=Math.floor((100*e-x)/(e-x))/100; if(!isFinite(c)||c<1)c=1; return Math.min(c,5000);}
+
+  // Live feed
+  const FEED_T = [
+    a=>`<b>@${a.n}</b> beat <b>@${a.m}</b> for <span class="win">${a.amt} $</span>`,
+    a=>`<b>@${a.n}</b> opened <b>${a.amt} $</b> duel`,
+    a=>`<b>@${a.n}</b> cashed at <span class="win">${a.x}×</span>`,
+    a=>`<b>@${a.n}</b> on <b>${a.s}-win</b> streak 🔥`,
+    a=>`<b>${a.room}</b> room — <b>${a.p}</b> in pool`,
+  ];
+  function feedItem(){
+    const t=Math.floor(Math.random()*FEED_T.length);
+    const n=pick(NAMES), m=pick(NAMES.filter(x=>x!==n));
+    const d={n,m,amt:pick([10,50,100,250,500]),x:(1+Math.random()*7.5).toFixed(2),s:rint(3,11),room:pick(ROOMS).host,p:rint(18,210)};
+    return {html:FEED_T[t](d), av:n[0].toUpperCase(), col:avc(n), raw:d};
+  }
+  function pushFeed(clickable=true){
+    const f=$("feed"); const it=feedItem();
+    const el=document.createElement("div"); el.className="fi";
+    el.innerHTML=`<div class="av" style="background:${it.col}">${it.av}</div><div class="tx">${it.html}</div><div class="tg">now</div>`;
+    if(clickable){
+      el.onclick=()=>{
+        if(it.raw.amt && Math.random()>.4) startGame("crash", it.raw.amt, it.raw.n);
+        else toast("Joined similar duel from feed");
+      };
+    }
+    f.prepend(el);
+    [...f.children].forEach((c,i)=>{ const tg=c.querySelector(".tg"); if(tg&&i>0)tg.textContent=i+"m"; });
+    while(f.children.length>6) f.lastChild.remove();
+  }
+
+  // Open duels
+  function renderDuels(){
+    const games=[["crash","APEX","crash"],["tick","PULSE","tick"]];
+    let html="";
+    for(let i=0;i<3;i++){
+      const n=pick(NAMES), g=pick(games), amt=pick([10,50,100,250,500]);
+      const hot = amt>=250 || Math.random()<.25;
+      html += `<div class="duelc ${hot?'hot':''}" data-open='${JSON.stringify({n,game:g[0],amt})}'>
+        <div class="av" style="background:${avc(n)}">${n[0].toUpperCase()}</div>
+        <div class="meta"><div class="nm">@${n} ${hot?'<span style="font-size:9px;color:#FFC24B">🔥 HOT</span>':''}</div>
+          <div class="gm"><span class="gpill ${g[2]}">${g[1]}</span> waiting • ${rint(4,38)}s ago</div></div>
+        <div class="right"><div class="stake">${amt} $</div><button class="joinb">Accept</button></div>
+      </div>`;
+    }
+    $("duels").innerHTML=html;
+    [...document.querySelectorAll("#duels .duelc")].forEach(c=>{
+      c.addEventListener("click",e=>{
+        if(e.target.classList.contains("joinb")) e.stopImmediatePropagation();
+        const d=JSON.parse(c.dataset.open);
+        startGame(d.game,d.amt,d.n);
+      });
+    });
+  }
+
+  // Rooms
+  function renderRooms(targetId="rooms"){
+    const cont=$(targetId); if(!cont) return;
+    cont.innerHTML=ROOMS.map(r=>{
+      const inpool=rint(24,r.cap), pct=Math.round(inpool/r.cap*100);
+      return `<div class="room" data-room='${JSON.stringify({host:r.host,cap:r.cap,inpool})}'>
+        <div class="liveppl">● ${rint(180,9200)}</div>
+        <div class="host"><div class="ha">${r.host[0]}</div><div><div class="hn">${r.host}</div><div class="hs">${r.tag}</div></div></div>
+        <div class="pool"><div class="pl"><span>pool</span><span>${inpool}/${r.cap}</span></div>
+          <div class="bar"><i style="width:${pct}%"></i></div></div>
+      </div>`;
+    }).join("");
+    [...cont.querySelectorAll(".room")].forEach(c=>{
+      c.addEventListener("click",()=>{
+        const r=JSON.parse(c.dataset.room);
+        toast(`Joining <b>${r.host}</b>'s pool — ${r.inpool} players competing`);
+        setTimeout(()=>startGame("crash", curStake||50, r.host, true), 650);
+      });
+    });
+  }
+
+  // Tabs
+  let currentTab="home";
+  function switchTab(tab){
+    currentTab=tab;
+    ["home","duel","rooms","profile"].forEach(t=>{
+      const el=$("tab-"+t); if(el) el.style.display = (t===tab)?"block":"none";
+    });
+    document.querySelectorAll(".tabs .tab").forEach(el=>el.classList.toggle("active", el.dataset.tab===tab));
+    if(tab==="rooms") renderRooms("roomsBig");
+    if(tab==="profile") updateProfile();
+  }
+  document.querySelectorAll(".tabs .tab").forEach(t=>t.addEventListener("click",()=>switchTab(t.dataset.tab)));
+
+  // Profile
+  function updateProfile(){
+    $("profileAv").textContent = (S.name||"you").slice(0,1).toUpperCase();
+    $("profileAv").style.background = avc(S.name||"you");
+    $("profileName").textContent = S.name || "you.eth";
+    $("pTotal").textContent = S.totalDuels || 142;
+    const wr = S.totalDuels>0 ? Math.round((S.wins/(S.wins+S.losses))*1000)/10 : 61.3;
+    $("pWinrate").textContent = wr+"%";
+    $("pStreak").innerHTML = (S.streak||0)+" 🔥";
+    $("pLongest").textContent = S.longestStreak || 19;
+    $("pBiggest").textContent = (S.biggestWin>0?"+":"")+fmt(S.biggestWin||840)+" $";
+    $("pPL").innerHTML = (S.totalPL>=0?"+":"")+fmt(S.totalPL||2140)+" $";
+    $("pPL").style.color = S.totalPL>=0 ? "var(--mint)" : "var(--coral)";
+  }
+  $("editNameBtn")?.addEventListener("click",()=>{
+    const n=prompt("Enter new username (demo)", S.name||"you.eth");
+    if(n){ S.name=n; save(); updateProfile(); toast("Username updated (demo)"); }
+  });
+  $("claimBonus")?.addEventListener("click",()=>{
+    S.balance +=50; $("bal").textContent=fmt(S.balance)+" $"; save(); updateProfile();
+    toast("<b>+50 $ daily bonus claimed!</b>"); 
+  });
+  $("howItWorks")?.addEventListener("click",()=>{
+    toast("PvP only. House takes transparent 5%. All games are provably fair. Full rules in real app.");
+  });
+
+  // Sheet
+  let curGame="crash", curStake=50;
+  function openSheet(){ $("scrim").classList.add("on"); $("sheet").classList.add("on"); }
+  function closeSheet(){ $("scrim").classList.remove("on"); $("sheet").classList.remove("on"); }
+  $("challengeBtn").addEventListener("click",openSheet);
+  $("scrim").addEventListener("click",closeSheet);
+  $("openSheetFromDuel")?.addEventListener("click",openSheet);
+
+  document.getElementById("games").addEventListener("click",e=>{
+    const c=e.target.closest(".gcard"); if(!c)return;
+    [...document.querySelectorAll(".gcard")].forEach(x=>x.classList.remove("sel"));
+    c.classList.add("sel"); curGame=c.dataset.game;
+  });
+  document.getElementById("stakes").addEventListener("click",e=>{
+    const c=e.target.closest(".stake-c"); if(!c)return;
+    [...document.querySelectorAll(".stake-c")].forEach(x=>x.classList.remove("sel"));
+    c.classList.add("sel"); curStake=+c.dataset.s;
+  });
+  $("findBtn").addEventListener("click",()=>{ closeSheet(); setTimeout(()=>startGame(curGame,curStake,pick(NAMES)), 240); });
+  $("inviteBtn").addEventListener("click",()=>{ toast("Invite link copied — send it in any chat or Telegram group 🔗"); closeSheet(); });
+
+  // Game engine
+  const cv=$("cv"), ctx=cv.getContext("2d", {alpha:true}); let DPR=1;
+  function sizeCv(){ 
+    DPR=Math.min(2.2,window.devicePixelRatio||1); 
+    cv.width=cv.clientWidth*DPR; 
+    cv.height=cv.clientHeight*DPR; 
+  }
+  let game="crash", stake=50, oppName="", isRoom=false, opp=null, round=null;
+  let raf=null, t0=0, mult=1, hist=[], youCash=null, oppCash=null, phase="idle";
+  let tickData=null;
+
+  async function startGame(g, s, name, room=false){
+    game=g; stake=s; oppName=name; isRoom=!!room;
+    if(S.balance < s){ toast("Not enough balance"); return; }
+
+    // Cleanup previous game elements (especially reaction signal)
+    const oldSignal = document.getElementById('reactionSignal');
+    if (oldSignal) oldSignal.remove();
+
+    $("game").classList.add("on"); $("result").classList.remove("on");
+    sizeCv(); particles=[];
+    $("potv").textContent=fmt(s*2)+" $";
+    $("oppnm").textContent = room ? name+"'s pool" : "@"+name;
+    $("oppav").textContent = name[0].toUpperCase(); $("oppav").style.background=avc(name);
+    $("opplabel").textContent = room ? "pool best" : "@"+name;
+    $("yousc").textContent="—"; $("oppsc").textContent="—";
+    $("big").style.color="#F4F7FC"; 
+    $("big").textContent= g==="tick" ? "$ —" : g==="reaction" ? "READY" : "1.00×";
+    $("big").style.transform="scale(1)";
+    hist=[]; youCash=null; oppCash=null; phase="armed";
+    if(g==="crash"){ await prepCrash(); }
+    else if(g==="tick"){ prepTick(); }
+    else if(g==="reaction"){ prepReaction(); }
+    // reset verify data
+    $("verifyBtn").onclick = showVerify;
+  }
+
+  // ========== APEX (CRASH) ==========
+  let currentSeeds = {};
+  async function prepCrash(){
+    const ss=rnd(18); const sh=await sha(ss); const hm=await hmac(ss, "vs:"+rint(1000,9999));
+    const crash=crashPt(hm);
+    const style = pick([[1.35,2.1],[1.7,3.4],[2.4,7.8],[3.1,14]]);
+    opp = { target: +(style[0]+Math.random()*(style[1]-style[0])).toFixed(2), style: pick(["conservative","normal","degen"]) };
+    round = {crash, ss, sh, hm};
+    currentSeeds = {ss, sh, crash:crash.toFixed(2)};
+    $("ph").textContent="tap to launch • opponent ready";
+    drawCrash(false);
+    $("gctrl").innerHTML=`<button class="gbtn play" id="go">LAUNCH • ${stake} $</button>`;
+    $("go").onclick=runCrash;
+  }
+  function runCrash(){
+    phase="run"; mult=1; hist=[]; t0=performance.now(); youCash=null; oppCash=null; particles=[];
+    $("gctrl").innerHTML=`<button class="gbtn cash" id="cash">CASH OUT <span id="cashx">1.00×</span></button>`;
+    $("cash").onclick=cashOut;
+    raf=requestAnimationFrame(crashTick);
+  }
+  function crashTick(now){
+    if(phase!=="run") return;
+    const dt=Math.min(58, now-(crashTick._l||now)); crashTick._l=now;
+    const growth = 0.00051 * dt * (1 + Math.max(0,(mult-3)*0.06));
+    mult += mult * growth;
+    hist.push({t:now-t0, m:mult});
+
+    // opponent logic
+    if(oppCash===null){
+      const willCash = (opp.style==="degen" && mult>opp.target*0.92) || (opp.style==="conservative" && mult>opp.target*0.78) || mult>=opp.target;
+      if(willCash && mult<=round.crash){ 
+        oppCash=opp.target; 
+        $("oppsc").textContent=oppCash.toFixed(2)+"×";
+        $("oppsc").style.color = "#FF5C72";
+      }
+      else $("oppsc").textContent="in @ "+opp.target.toFixed(2);
+    }
+
+    if(youCash===null){
+      $("yousc").textContent=mult.toFixed(2)+"×";
+      const cx=$("cashx"); if(cx) cx.textContent=mult.toFixed(2)+"×";
+    }
+
+    $("big").textContent=mult.toFixed(2)+"×";
+    const col = mult<1.7?"#F4F7FC":mult<3.2?"#FFC24B":mult<7?"#FF914D":"#FF5C72";
+    $("big").style.color=col;
+    $("big").style.transform = mult>8 ? `scale(${1+Math.min(0.12,(mult-8)*0.018)})` : "scale(1)";
+
+    drawCrash(false);
+    if(mult>=round.crash) return endCrash();
+    raf=requestAnimationFrame(crashTick);
+  }
+  function cashOut(){ 
+    if(phase!=="run"||youCash!==null) return; 
+    youCash=+mult.toFixed(2); 
+    $("yousc").textContent=youCash.toFixed(2)+"×";
+    $("gctrl").innerHTML=`<button class="gbtn play" disabled>LOCKED @ ${youCash.toFixed(2)}× — watching…</button>`;
+    spawnParticles(cv.width*0.68, cv.height*0.36, 22, "#22E08A", 1.6, 'burst');
+  }
+  function endCrash(){
+    cancelAnimationFrame(raf); phase="done";
+    if(oppCash===null) $("oppsc").textContent="busted @ "+round.crash.toFixed(2);
+    $("big").textContent=round.crash.toFixed(2)+"×"; $("big").style.color="#FF5C72";
+    $("ph").textContent="CRASHED @ "+round.crash.toFixed(2)+"×";
+    drawCrash(true);
+    spawnParticles(cv.width*0.6, cv.height*0.34, 52, "#FF5C72", 3.0, 'burst');
+    setTimeout(()=> spawnParticles(cv.width*0.48, cv.height*0.3, 26, "#FF5C72", 1.6), 55);
+    const ys=youCash||0, os=oppCash||0;
+    settle(ys, os, ys?ys.toFixed(2)+"×":"BUST", os?os.toFixed(2)+"×":"BUST");
+  }
+  function drawCrash(crashed){
+    const w=cv.width, h=cv.height; ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle="rgba(42,49,68,.45)"; ctx.lineWidth=DPR*0.9;
+    for(let i=1;i<5;i++){ const y=h*i/5; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+
+    if(hist.length<2) return;
+    const maxM=Math.max(2.2, mult*1.12), maxT=Math.max(2100, hist[hist.length-1].t*1.08);
+    const X=t=>t/maxT*w, Y=m=>h - (Math.log(m)/Math.log(maxM))*h*0.88 - h*0.04;
+
+    // fill
+    ctx.beginPath(); ctx.moveTo(0,h);
+    for(const p of hist) ctx.lineTo(X(p.t), Y(p.m));
+    ctx.lineTo(X(hist[hist.length-1].t), h); ctx.closePath();
+    const g=ctx.createLinearGradient(0,0,0,h);
+    const col = crashed ? [255,92,114] : [34,224,138];
+    g.addColorStop(0, `rgba(${col.join(",")},.32)`);
+    g.addColorStop(0.65, `rgba(${col.join(",")},.08)`);
+    g.addColorStop(1, `rgba(${col.join(",")},0)`);
+    ctx.fillStyle=g; ctx.fill();
+
+    // main line
+    ctx.beginPath();
+    for(let i=0;i<hist.length;i++){ const p=hist[i]; i?ctx.lineTo(X(p.t),Y(p.m)):ctx.moveTo(X(p.t),Y(p.m)); }
+    ctx.strokeStyle = crashed?"#FF5C72":"#22E08A";
+    ctx.lineWidth = crashed ? 3.4*DPR : 3.6*DPR;
+    ctx.lineJoin="round"; 
+    ctx.shadowColor = crashed ? "rgba(255,92,114,.75)" : "rgba(34,224,138,.6)";
+    ctx.shadowBlur = crashed ? 16*DPR : 15*DPR; 
+    ctx.stroke(); ctx.shadowBlur=0;
+
+    // opponent dashed line
+    if(oppCash){ 
+      const oy=Y(oppCash); 
+      ctx.strokeStyle="rgba(255,92,114,.65)"; ctx.lineWidth=1.6*DPR; ctx.setLineDash([5*DPR,4*DPR]);
+      ctx.beginPath(); ctx.moveTo(0,oy); ctx.lineTo(w*0.96,oy); ctx.stroke(); ctx.setLineDash([]);
+    }
+    updateDrawParticles(ctx,w,h);
+  }
+
+  // ========== REACTION DUEL ==========
+  let reactionState = { started: false, signalTime: 0, fakeTime: 0, hasClicked: false, result: null };
+
+  function prepReaction(){
+    $("ph").textContent = "wait for the green signal • one fake signal";
+    $("big").textContent = "READY";
+    $("big").style.color = "#F4F7FC";
+    $("gctrl").innerHTML = `<button class="gbtn play" id="reactionStart">Start Round</button>`;
+    $("reactionStart").onclick = startReactionRound;
+
+    // Clear any previous signal UI
+    const stage = document.querySelector('.stage');
+    if (stage.querySelector('#reactionSignal')) stage.querySelector('#reactionSignal').remove();
+  }
+
+  function startReactionRound(){
+    const stage = document.querySelector('.stage');
+    reactionState = { started: true, signalTime: 0, fakeTime: 0, hasClicked: false, result: null };
+
+    // Create signal element
+    let signal = stage.querySelector('#reactionSignal');
+    if (!signal) {
+      signal = document.createElement('div');
+      signal.id = 'reactionSignal';
+      signal.style.cssText = `
+        position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+        width:180px; height:180px; border-radius:999px; display:flex; align-items:center; justify-content:center;
+        font-family:var(--display); font-weight:800; font-size:26px; color:white; cursor:pointer;
+        box-shadow:0 0 50px rgba(255,255,255,.25); transition: all .12s cubic-bezier(0.23, 1, 0.32, 1); user-select:none;
+        border: 3px solid rgba(255,255,255,0.15);
+      `;
+      stage.appendChild(signal);
+    }
+
+    signal.style.background = '#2C313F';
+    signal.style.border = '3px solid rgba(255,255,255,0.2)';
+    signal.innerHTML = `
+      <div style="text-align:center; line-height:1.15;">
+        <div style="font-size:18px; font-weight:700;">GET READY</div>
+      </div>`;
+    signal.onclick = handleReactionClick;
+
+    // Disable start button / show status
+    $("gctrl").innerHTML = `<button class="gbtn play" disabled style="opacity:0.5; cursor:not-allowed;">Round in progress...</button>`;
+
+    $("ph").textContent = "";
+    $("big").textContent = "";
+
+    // Decide if there will be a fake signal this round (55% chance)
+    const hasFake = Math.random() < 0.55;
+    let realDelay;
+
+    if (hasFake) {
+      // Schedule fake signal
+      const fakeDelay = 1100 + Math.random() * 1700;
+      reactionState.fakeTime = performance.now() + fakeDelay;
+
+      setTimeout(() => {
+        if (!reactionState.started || reactionState.hasClicked) return;
+        showFakeSignal(signal);
+      }, fakeDelay);
+
+      // Real signal comes after fake
+      realDelay = fakeDelay + 850 + Math.random() * 1900;
+      reactionState.signalTime = performance.now() + realDelay;
+    } else {
+      // No fake signal this round — only real signal
+      reactionState.fakeTime = 0;
+      realDelay = 1600 + Math.random() * 2800;
+      reactionState.signalTime = performance.now() + realDelay;
+    }
+
+    setTimeout(() => {
+      if (!reactionState.started || reactionState.hasClicked) return;
+      showRealSignal(signal);
+    }, realDelay);
+  }
+
+  function showFakeSignal(signal){
+    if (!reactionState.started || reactionState.hasClicked) return;
+    signal.style.background = '#F5A623';
+    signal.style.border = '3px solid #FFD580';
+    signal.innerHTML = `
+      <div style="text-align:center; line-height:1.1;">
+        <div style="font-size:24px; font-weight:800;">FAKE</div>
+        <div style="font-size:12px; margin-top:2px; opacity:0.9;">Do NOT click</div>
+      </div>`;
+    signal.style.boxShadow = '0 0 60px #F5A623';
+  }
+
+  function showRealSignal(signal){
+    if (!reactionState.started || reactionState.hasClicked) return;
+    signal.style.background = '#22E08A';
+    signal.style.border = '3px solid #7FFFC0';
+    signal.innerHTML = `<div style="font-size:32px; font-weight:800; letter-spacing:-1.5px;">CLICK</div>`;
+    signal.style.boxShadow = '0 0 70px #22E08A';
+    reactionState.signalTime = performance.now();
+  }
+
+  function handleReactionClick(){
+    if (!reactionState.started || reactionState.hasClicked) return;
+
+    const now = performance.now();
+    reactionState.hasClicked = true;
+    const signal = document.querySelector('#reactionSignal');
+
+    const timeSinceFake = now - reactionState.fakeTime;
+    const timeSinceSignal = now - reactionState.signalTime;
+
+    let verdict, youTime, oppTime, youWin;
+
+    const clickedFake = reactionState.fakeTime > 0 && 
+                        timeSinceFake > -200 && timeSinceFake < 900;
+
+    if (clickedFake) {
+      // Clicked on fake signal
+      verdict = "Clicked on FAKE signal";
+      youWin = false;
+      youTime = "—";
+    } else if (reactionState.signalTime === 0 || now < reactionState.signalTime - 50) {
+      // Clicked too early (before real signal)
+      verdict = "Clicked too early";
+      youWin = false;
+      youTime = "—";
+    } else {
+      // Valid click on real signal
+      youTime = Math.round(now - reactionState.signalTime);
+      // Simulate opponent reaction time (180-320ms with some variance)
+      oppTime = 190 + Math.floor(Math.random() * 140);
+      
+      if (youTime < oppTime) {
+        youWin = true;
+        verdict = "You were faster";
+      } else if (youTime > oppTime) {
+        youWin = false;
+        verdict = "Opponent was faster";
+      } else {
+        youWin = null;
+        verdict = "Draw";
+      }
+    }
+
+    // Show result
+    showReactionResult(youTime, oppTime || "—", verdict, youWin);
+    
+    // Cleanup
+    if (signal) signal.style.pointerEvents = 'none';
+    reactionState.started = false;
+  }
+
+  function showReactionResult(youMs, oppMs, verdict, youWin){
+    $("ph").textContent = verdict;
+    $("big").innerHTML = youWin === true ? "YOU WIN" : youWin === false ? "YOU LOSE" : "DRAW";
+    $("big").style.color = youWin === true ? "#22E08A" : youWin === false ? "#FF5C72" : "#F4F7FC";
+
+    $("gctrl").innerHTML = `
+      <div style="background:rgba(255,255,255,0.04); border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; font-family:var(--mono); font-size:15px; margin-bottom:10px;">
+          <div style="color:#22E08A; font-weight:600;">You</div>
+          <div style="font-weight:700; font-size:16px;">${youMs} ms</div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; font-family:var(--mono); font-size:15px;">
+          <div style="color:#FF5C72; font-weight:600;">Opponent</div>
+          <div style="font-weight:700; font-size:16px;">${oppMs} ms</div>
+        </div>
+      </div>
+      
+      <button class="gbtn play" onclick="startReactionRound()" style="margin-bottom:8px;">Play again</button>
+    `;
+
+    setTimeout(() => {
+      if (youWin === true) {
+        settle(1, 0, youMs + "ms", oppMs + "ms");
+      } else if (youWin === false) {
+        settle(0, 1, youMs + "ms", oppMs + "ms");
+      } else {
+        settle(0.5, 0.5, youMs + "ms", oppMs + "ms");
+      }
+    }, 1100);
+  }
+
+  // ========== PULSE (TICK) ==========
+  function prepTick(){
+    tickData={start:92+Math.random()*52, price:0, pts:[], side:null, oppSide:null, bias: (Math.random()-.5)*0.6};
+    tickData.price=tickData.start;
+    $("ph").textContent="pick your side • 7 seconds";
+    $("big").textContent="$"+tickData.start.toFixed(1);
+    $("oppsc").textContent="ready";
+    drawTick(false);
+    $("gctrl").innerHTML=`<div class="gbtn pick"><button class="pickb up" id="pup">▲ UP</button><button class="pickb dn" id="pdn">▼ DOWN</button></div>`;
+    $("pup").onclick=()=>runTick("UP"); $("pdn").onclick=()=>runTick("DOWN");
+  }
+  function runTick(side){
+    tickData.side=side; tickData.oppSide=side==="UP"?"DOWN":"UP";
+    $("yousc").textContent="you: "+side; $("oppsc").textContent="@"+oppName+": "+tickData.oppSide;
+    phase="run"; t0=performance.now(); tickData.pts=[{t:0,p:tickData.start}];
+    $("gctrl").innerHTML=`<button class="gbtn cash" disabled id="tcount">Locked • 7.0s</button>`;
+    raf=requestAnimationFrame(tickTick);
+  }
+  function tickTick(now){
+    if(phase!=="run") return;
+    const el=now-t0;
+    const volatility = 0.75 + Math.sin(el/420)*0.4 + (Math.random()-0.5)*0.55;
+    tickData.price += (Math.random()-0.5 + tickData.bias*0.6) * volatility * 1.15;
+    tickData.pts.push({t:el, p:tickData.price});
+    const up = tickData.price >= tickData.start;
+    $("big").textContent="$"+tickData.price.toFixed(2);
+    $("big").style.color = up?"#22E08A":"#FF5C72";
+    const rem=Math.max(0,7-el/1000); const tc=$("tcount"); if(tc) tc.textContent="Locked • "+rem.toFixed(1)+"s";
+    drawTick(false);
+    if(el>=7000) return endTick();
+    raf=requestAnimationFrame(tickTick);
+  }
+  function endTick(){
+    cancelAnimationFrame(raf); phase="done";
+    const up = tickData.price >= tickData.start;
+    const outcome = up?"UP":"DOWN";
+    const youScore = tickData.side===outcome ? 1 : 0;
+    const oppScore = tickData.oppSide===outcome ? 1 : 0;
+    $("ph").textContent="closed "+outcome+" • $"+tickData.price.toFixed(2);
+    drawTick(true);
+    settle(youScore, oppScore, tickData.side+(youScore?" ✓":" ✗"), tickData.oppSide+(oppScore?" ✓":" ✗"));
+  }
+  function drawTick(done){
+    const w=cv.width, h=cv.height; ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle="rgba(42,49,68,.38)"; ctx.lineWidth=DPR*0.8;
+    const midY=h/2; ctx.setLineDash([4*DPR,4*DPR]); ctx.beginPath(); ctx.moveTo(0,midY); ctx.lineTo(w,midY); ctx.stroke(); ctx.setLineDash([]);
+
+    if(!tickData || tickData.pts.length<2) return;
+    const ps=tickData.pts, maxT=7000;
+    let lo=tickData.start, hi=tickData.start;
+    for(const p of ps){ lo=Math.min(lo,p.p); hi=Math.max(hi,p.p); }
+    const pad=Math.max(3,(hi-lo)*0.28); lo-=pad; hi+=pad;
+    const X=t=>t/maxT*w, Y=p=>h - ((p-lo)/(hi-lo))*h*0.86 - h*0.05;
+
+    const up = tickData.price>=tickData.start;
+
+    // Fading trail (older points more transparent + smoother)
+    ctx.lineJoin="round";
+    for(let i=1; i<ps.length; i++){
+      const progress = i / ps.length;
+      const alpha = 0.18 + progress * 0.72;
+      ctx.globalAlpha = alpha * (up ? 0.9 : 0.95);
+      ctx.strokeStyle = up ? "#22E08A" : "#FF5C72";
+      ctx.lineWidth = (1.4 + progress * 2.2) * DPR;
+      ctx.beginPath();
+      ctx.moveTo(X(ps[i-1].t), Y(ps[i-1].p));
+      ctx.lineTo(X(ps[i].t), Y(ps[i].p));
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+
+    // Main bright line on top
+    ctx.beginPath();
+    for(let i=0;i<ps.length;i++){ const p=ps[i]; i?ctx.lineTo(X(p.t),Y(p.p)):ctx.moveTo(X(p.t),Y(p.p)); }
+    ctx.strokeStyle=up?"#22E08A":"#FF5C72"; 
+    ctx.lineWidth=3.4*DPR; 
+    ctx.shadowColor=up?"rgba(34,224,138,.65)":"rgba(255,92,114,.65)"; 
+    ctx.shadowBlur=14*DPR; 
+    ctx.stroke(); 
+    ctx.shadowBlur=0;
+
+    // Momentum dots (last 5 points)
+    ctx.fillStyle = up ? "#22E08A" : "#FF5C72";
+    for(let i=Math.max(0,ps.length-5); i<ps.length; i++){
+      const p=ps[i];
+      ctx.beginPath();
+      ctx.arc(X(p.t), Y(p.p), 2.8*DPR, 0, Math.PI*2);
+      ctx.fill();
+    }
+
+    // start price marker
+    const sy=Y(tickData.start);
+    ctx.strokeStyle="rgba(255,255,255,.38)"; ctx.lineWidth=1.5*DPR; ctx.setLineDash([3*DPR,3*DPR]);
+    ctx.beginPath(); ctx.moveTo(0,sy); ctx.lineTo(w,sy); ctx.stroke(); ctx.setLineDash([]);
+  }
+
+  // ========== SETTLE ==========
+  function settle(youScore, oppScore, youLeg, oppLeg){
+    let res = youScore>oppScore ? 1 : youScore<oppScore ? 0 : 0.5;
+    const pot = stake*2;
+    let amt, verdict, vcol;
+    if(res===1){
+      const take = pot*(1-RAKE);
+      const profit = take - stake;
+      S.balance += profit;
+      amt = "+"+fmt(profit)+" $";
+      verdict = isRoom ? "You took the pool!" : "You win";
+      vcol="var(--mint)";
+      S.wins++; S.streak++; S.totalDuels++; S.totalPL += profit;
+      if(profit > S.biggestWin) S.biggestWin=profit;
+      if(S.streak > S.longestStreak) S.longestStreak=S.streak;
+    }else if(res===0){
+      S.balance -= stake;
+      amt = "−"+fmt(stake)+" $";
+      verdict="You lose";
+      vcol="var(--coral)";
+      S.losses++; S.streak=0; S.totalDuels++; S.totalPL -= stake;
+    }else{
+      amt="ante returned";
+      verdict="Draw";
+      vcol="var(--ink)";
+      S.streak=0;
+    }
+    $("verdict").textContent=verdict; $("verdict").style.color=vcol;
+    $("rsub").textContent = res===1 ? (S.streak>2 ? S.streak+"-win streak! 🔥" : "Pot is yours minus 5% rake") : res===0 ? "They held their nerve longer" : "Nobody blinked — fair split";
+    $("legyou").textContent=youLeg; $("legopp").textContent=oppLeg;
+    $("ramt").textContent=amt; $("ramt").style.color=vcol;
+    $("bal").textContent=fmt(S.balance)+" $";
+    // animate balance color flash
+    const balEl=$("bal"); balEl.style.color = res===1?"var(--mint)":"var(--coral)"; setTimeout(()=>balEl.style.color="var(--mint)", 820);
+
+    setTimeout(()=>{
+      $("result").classList.add("on");
+      if(res===1) confetti();
+      updateProfile(); save();
+    }, 480);
+  }
+  function confetti(){
+    const cols=["#22E08A","#8B7CFF","#FFC24B","#FF5C72"];
+    for(let i=0;i<28;i++){
+      const c=document.createElement("div"); c.className="confetti";
+      c.style.left=Math.random()*100+"%"; c.style.background=pick(cols);
+      c.style.animationDuration=(0.9+Math.random()*1.35)+"s";
+      c.style.animationDelay=(Math.random()*0.35)+"s";
+      $("result").appendChild(c);
+      setTimeout(()=>c.remove(), 2650);
+    }
+  }
+
+  // Verify modal
+  function showVerify(){
+    if(!currentSeeds.crash) return toast("No round data yet");
+    $("vHash").textContent = currentSeeds.sh || "—";
+    $("vClient").textContent = currentSeeds.ss || "—";
+    $("vCrash").textContent = currentSeeds.crash + "×";
+    $("vmodal").classList.add("on");
+  }
+  $("closeVerify")?.addEventListener("click",()=> $("vmodal").classList.remove("on"));
+  $("copySeed")?.addEventListener("click",()=>{
+    const txt = `Server: ${currentSeeds.sh}\nClient: ${currentSeeds.ss}\nCrash: ${currentSeeds.crash}×`;
+    navigator.clipboard?.writeText(txt).then(()=>toast("Seeds copied — verify anywhere")).catch(()=>toast("Copied to clipboard (demo)"));
+  });
+
+  // Game nav
+  $("gback").addEventListener("click",()=>{ cancelAnimationFrame(raf); $("game").classList.remove("on"); $("result").classList.remove("on"); particles=[]; });
+  $("againBtn").addEventListener("click",()=>{ $("result").classList.remove("on"); startGame(game, stake, isRoom?oppName:pick(NAMES), isRoom); });
+  $("shareBtn").addEventListener("click",()=>{
+    $("result").classList.remove("on"); $("game").classList.remove("on");
+    pushFeed(false);
+    toast("<b>Shared to chat!</b> 3 friends joined your rematch queue");
+    if(Math.random()<.3){ S.balance+=8; $("bal").textContent=fmt(S.balance)+" $"; save(); }
+  });
+
+  // Leave game and return to main screen
+  function leaveGame(){
+    cancelAnimationFrame(raf);
+    $("game").classList.remove("on");
+    $("result").classList.remove("on");
+    particles = [];
+    // Cleanup any leftover reaction signal
+    const oldSignal = document.getElementById('reactionSignal');
+    if (oldSignal) oldSignal.remove();
+    switchTab("home");
+  }
+
+  // Quick start game from Home
+  function quickStartGame(gameType) {
+    const stake = 50; // default stake for quick play
+    const opponent = pick(NAMES);
+    startGame(gameType, stake, opponent);
+  }
+
+  // Game Rules Modal
+  function showGameRules(game) {
+    const modal = document.getElementById('gameRulesModal');
+    const title = document.getElementById('rulesTitle');
+    const content = document.getElementById('rulesContent');
+
+    if (game === 'apex') {
+      title.innerHTML = '🚀 APEX <span style="color:#FF5C72; font-size:12px; font-weight:700;">— RULES (MUST READ)</span>';
+      content.innerHTML = `
+        <div style="margin-bottom:14px;">
+          <b style="color:#22E08A;">How to play</b><br>
+          A multiplier starts at <b>1.00×</b> and keeps rising. You must cash out before it crashes.
+        </div>
+        <div style="margin-bottom:14px;">
+          <b style="color:#22E08A;">Goal</b><br>
+          Cash out at a <b>higher multiplier</b> than your opponent.
+        </div>
+        <div>
+          The one who holds longer wins <span style="color:#FF5C72;">(minus 5% house fee)</span>.
+        </div>
+      `;
+    } 
+    else if (game === 'pulse') {
+      title.innerHTML = '📈 PULSE <span style="color:#FF5C72; font-size:12px; font-weight:700;">— RULES (MUST READ)</span>';
+      content.innerHTML = `
+        <div style="margin-bottom:14px;">
+          <b style="color:#22E08A;">How to play</b><br>
+          A price starts at a random value and moves for <b>7 seconds</b>. Choose <b>UP</b> or <b>DOWN</b>.
+        </div>
+        <div style="margin-bottom:14px;">
+          <b style="color:#22E08A;">Goal</b><br>
+          Correctly predict the direction of the price movement.
+        </div>
+        <div>
+          Winner takes the pot <span style="color:#FF5C72;">(minus 5% house fee)</span>.
+        </div>
+      `;
+    } 
+    else if (game === 'reaction') {
+      title.innerHTML = '⚡ REACTION <span style="color:#FF5C72; font-size:12px; font-weight:700;">— RULES (MUST READ)</span>';
+      content.innerHTML = `
+        <div style="margin-bottom:14px;">
+          <b style="color:#22E08A;">How to play</b><br>
+          A signal appears after a random delay. Click as fast as possible on the <b>green</b> signal.
+        </div>
+        <div style="margin-bottom:14px; padding:10px; background:rgba(255,92,114,0.1); border-radius:8px; border-left:3px solid #FF5C72;">
+          <b style="color:#FF5C72;">⚠️ Important</b><br>
+          There is <b>one fake signal</b> (yellow). Clicking it = instant loss.
+        </div>
+        <div>
+          The player with the faster valid reaction wins.
+        </div>
+      `;
+    }
+
+    modal.style.display = 'flex';
+  }
+
+  function hideGameRules() {
+    document.getElementById('gameRulesModal').style.display = 'none';
+  }
+
+  // Attach listeners for game cards in Profile
+  setTimeout(() => {
+    document.getElementById('gameCardApex')?.addEventListener('click', () => showGameRules('apex'));
+    document.getElementById('gameCardPulse')?.addEventListener('click', () => showGameRules('pulse'));
+    document.getElementById('gameCardReaction')?.addEventListener('click', () => showGameRules('reaction'));
+
+    // Close button for rules modal
+    document.getElementById('rulesCloseBtn')?.addEventListener('click', hideGameRules);
+  }, 100);
+
+  // Attach listener for Back to main button (result screen)
+  document.getElementById('backToMainBtn')?.addEventListener('click', leaveGame);
+
+  // Toast
+  let tt=null;
+  function toast(html){ const t=$("toast"); t.innerHTML=html; t.classList.add("on"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("on"), 2650); }
+
+  // Init
+  (async function(){
+    load();
+    if(!S.name) S.name = pick(["you.eth","degen42","nerve_king","vs_pro"]);
+    $("bal").textContent=fmt(S.balance)+" $";
+    $("balWrap").onclick=()=> switchTab("profile");
+
+    for(let i=0;i<5;i++) pushFeed();
+    setInterval(()=>pushFeed(), 2450);
+    renderDuels(); setInterval(renderDuels, 8500);
+    renderRooms("rooms");
+    updateProfile();
+
+    // quick duel from duel tab
+    $("quickDuelBtn")?.addEventListener("click",()=>{
+      switchTab("home");
+      setTimeout(()=>startGame(pick(["crash","tick"]), pick([50,100,250]), pick(NAMES)), 180);
+    });
+
+    // keyboard escape
+    document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ if($("game").classList.contains("on")) $("gback").click(); else if($("sheet").classList.contains("on")) closeSheet(); }});
+
+    // Intro enter button (was missing)
+    $("enterBtn").addEventListener("click",()=>{ $("intro").classList.add("gone"); });
+
+    // initial demo activity
+    setTimeout(()=>toast("12 new duels started in last minute"), 1800);
+  })();
+})();
+</script>
+</body>
+</html>
